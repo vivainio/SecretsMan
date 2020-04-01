@@ -16,6 +16,9 @@ namespace SecretsMan.Tests
         // woo, sane string split
         public static string[] Split(this string s, string sep, int count) =>
             s.Split(new[] {sep}, count, StringSplitOptions.None);
+
+        public static string Decode(this byte[] bytes) => Encoding.UTF8.GetString(bytes);
+
     }
     
     public class UnitTests
@@ -44,15 +47,26 @@ namespace SecretsMan.Tests
         public void TestCryptedtrings()
         {
             var b = SomeBytes(20);
-            var k = CryptUtil.CreateKeyString("mykey", b);
-            var parsed = CryptUtil.ParseKeyString(k);
+            var k = CryptUtil.CreateEncryptedString("mykey", b);
+            var parsed = CryptUtil.ParseEncryptedString(k);
+            Check.That(parsed?.Bytes).Equals(b);
+            Check.That(parsed?.KeyName == "mykey");
         }
         
         [Case]
-        public void One()
+        public void TestInitSecrets()
         {
             var secrets = fixture.Create<Secrets>();
             SecretsManager.WriteToJson("secrets.json", secrets);
+        }
+
+        [Case]
+        public void TestSalt()
+        {
+            var saltbytes = CryptUtil.CreateIVByRepeatingSalt("re!".ToUtf8());
+            var decoded = saltbytes.Decode();
+            Check.That(decoded).Equals("re!re!re!re!re!r");
+
         }
         
     }

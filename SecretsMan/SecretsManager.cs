@@ -9,8 +9,11 @@ namespace SecretsMan
 {
     public static class CryptUtil
     {
+        public const int KeyLengthBytes = 32;
+        public const int IVLengthBytes = 16;
         public const string MagicPrefix = "=K=";
         public const string KeySeparator = "/";
+        
         private static Aes GetAes(byte[] key, byte[] iv)
         {
             var aesAlg = Aes.Create() ?? throw new ArgumentNullException("Aes.Create()");
@@ -19,6 +22,19 @@ namespace SecretsMan
             //aesAlg.Padding = PaddingMode.Zeros;
             return aesAlg;
 
+        }
+
+        public static byte[] CreateIVByRepeatingSalt(byte[] salt)
+        {
+            var repsNeeded = (IVLengthBytes / salt.Length) + 1;
+            var ms = new MemoryStream();
+            for (var pos = 0; pos <= IVLengthBytes; pos+=salt.Length)
+            {
+                ms.Write(salt,0, salt.Length);
+            }
+
+            ms.SetLength(IVLengthBytes);
+            return ms.ToArray();
         }
         public static byte[] EncryptBytes(byte[] key, byte[] iv, byte[] plainText)
         {
@@ -43,7 +59,7 @@ namespace SecretsMan
             return ms.ToArray();
         }
 
-        public static string CreateKeyString(string keyId, byte[] content)
+        public static string CreateEncryptedString(string keyId, byte[] content)
         {
             var sb = new StringBuilder();
             sb.Append(MagicPrefix);
@@ -53,17 +69,27 @@ namespace SecretsMan
             return sb.ToString();
         }
 
-        public static byte[] ParseKeyString(string keyString)
+        public static (string KeyName, byte[] Bytes)? ParseEncryptedString(string keyString)
         {
             var sep = keyString.Split(new[] { KeySeparator }, 2, StringSplitOptions.None);
             var head = sep[0];
-            if (!head.StartsWith(MagicPrefix))
+            if (!head.StartsWith(MagicPrefix) || sep.Length < 2)
             {
                 return null;
             }
-            var splitPrefix = sep[0].Split(new[] { KeySeparator }, 2, StringSplitOptions.None);
-            return Convert.FromBase64String(sep[1]);
+
+            var keyName = head.Substring(MagicPrefix.Length);
+            var cypherText = Convert.FromBase64String(sep[1]);
+            return (keyName, cypherText);
         }
+        public static byte[] CreateRandomBytes()
+        {
+            var bytes = new byte[CryptUtil.KeyLengthBytes];
+            var rnd = new RNGCryptoServiceProvider();
+            rnd.GetNonZeroBytes(bytes);
+            return bytes;
+        }
+        
     }
     public class SecretsManager
     {
@@ -78,6 +104,11 @@ namespace SecretsMan
         {
             var bytes = JsonSerializer.SerializeToUtf8Bytes(secrets);
             File.WriteAllBytes(fname, bytes);
+        }
+
+        public static void CreateRandomKeyRing()
+        {
+            var secrets = new Secrets();
         }
     }
 }
