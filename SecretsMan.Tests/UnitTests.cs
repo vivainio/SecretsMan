@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using AutoFixture;
@@ -8,19 +7,6 @@ using TrivialTestRunner;
 
 namespace SecretsMan.Tests
 {
-
-    public static class StringExtensions
-    {
-        public static byte[] ToUtf8(this string text) => Encoding.UTF8.GetBytes(text);
-
-        // woo, sane string split
-        public static string[] Split(this string s, string sep, int count) =>
-            s.Split(new[] {sep}, count, StringSplitOptions.None);
-
-        public static string Decode(this byte[] bytes) => Encoding.UTF8.GetString(bytes);
-
-    }
-    
     public class UnitTests
     {
         private Fixture fixture;
@@ -66,7 +52,17 @@ namespace SecretsMan.Tests
             var saltbytes = CryptUtil.CreateIVByRepeatingSalt("re!".ToUtf8());
             var decoded = saltbytes.Decode();
             Check.That(decoded).Equals("re!re!re!re!re!r");
+        }
 
+        [Case]
+        public void IssueNewKey()
+        {
+            var masterkey = Key.CreateFromBytes("masterkey", CryptUtil.CreateRandomBytesForKey());
+
+            var keyRing = new Secrets();
+            keyRing.Keys.Add(Secrets.IssueKey("user_key_1", masterkey));
+            keyRing.Keys.Add( Secrets.IssueKey("user_key_2", masterkey));
+            
         }
         
     }
