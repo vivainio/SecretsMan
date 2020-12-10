@@ -9,8 +9,6 @@ using System.Text.Json.Serialization;
 using AutoFixture;
 using Microsoft.IdentityModel.Tokens;
 using NFluent;
-using SecretsMan.Aws;
-using SecretsMan.Jwt;
 using TrivialTestRunner;
 
 namespace SecretsMan.Tests

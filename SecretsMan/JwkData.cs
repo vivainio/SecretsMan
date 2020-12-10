@@ -1,4 +1,4 @@
-﻿namespace SecretsMan.Jwt
+﻿namespace SecretsMan
 {
     public class JwkData
     {

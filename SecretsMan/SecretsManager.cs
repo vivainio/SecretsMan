@@ -6,7 +6,6 @@ namespace SecretsMan
 {
     public class SecretsManager
     {
-
         public static Secrets LoadFromJson(string fname)
         {
             var cont = File.ReadAllBytes(fname);

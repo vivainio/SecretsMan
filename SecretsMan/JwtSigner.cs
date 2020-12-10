@@ -5,9 +5,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
-using SecretsMan.Aws;
 
-namespace SecretsMan.Jwt
+namespace SecretsMan
 {
     public class JwtSigner
     {
