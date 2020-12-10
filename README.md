@@ -46,3 +46,11 @@ Check.That(token)
         "eyJhbGciOiJSUzI1NiIsImtpZCI6ImNjMzRjMGEwLWJkNWEtNGEzYy1hNTBkLWEyYTdkYjc2NDNkZiIsInR5cCI6IkpXVCJ9");
 
 ```
+
+Main use case is supporting API gateway built in JWT authorizer
+(https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html).
+Hence, only RSA keys are supported.
+
+## License
+
+MIT
