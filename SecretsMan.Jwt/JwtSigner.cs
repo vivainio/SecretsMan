@@ -11,34 +11,6 @@ namespace SecretsMan.Jwt
 {
     public class JwtSigner
     {
-        public static byte[] GenerateRandomKey()
-        {
-            using (var rsa = new RSACryptoServiceProvider(2048))
-            {
-                try
-                {
-                    RSAParameters rsaKeyInfo = rsa.ExportParameters(true);
-                    var key = new RsaSecurityKey(rsaKeyInfo);
-                    
-                    var exported = rsa.ExportRSAPrivateKey();
-                    
-                    return exported;
-                }
-                finally
-                {
-                    rsa.PersistKeyInCsp = false;
-                }
-            }
-        }
-
-        public static SecurityKey ImportKeyFromBytes(byte[] bytes)
-        {
-            using var rsa = new RSACryptoServiceProvider();
-            rsa. ImportRSAPrivateKey(bytes, out var count);
-            RSAParameters rsaKeyInfo = rsa.ExportParameters(true);
-            var key = new RsaSecurityKey(rsaKeyInfo);
-            return key;
-        }
 
         public static SecurityKey ImportKeyFromJwk(JwkData jwk)
         {

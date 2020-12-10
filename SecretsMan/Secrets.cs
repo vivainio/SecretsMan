@@ -8,9 +8,9 @@ namespace SecretsMan
     {
         public string Name { get; set; }
         public string Text { get; set; }
-        public string? Expires { get; set; }
+        public string Expires { get; set; }
         public string Issued { get; set; }
-        public byte[]? Decrypted { get; set; }
+        public byte[] Decrypted { get; set; }
 
         // yeah, salt is based on key NAME
         public byte[] IvSalt => CryptUtil.CreateIVByRepeatingSalt(Name.ToUtf8());
@@ -25,7 +25,7 @@ namespace SecretsMan
 
     public class Secrets
     {
-        public string? EncryptedWithKey { get; set; }
+        public string EncryptedWithKey { get; set; }
 
         private Dictionary<string, byte[]> DecryptedKeys { get; set; } = new Dictionary<string, byte[]>();
 
