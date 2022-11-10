@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -12,11 +13,23 @@ namespace SecretsMan
         public const string MagicPrefix = "=K=";
         public const string KeySeparator = "!";
         
-        private static Aes GetAes(byte[] key, byte[] iv)
+        public static byte[] Combine(byte[] first, byte[] second)
         {
-            var aesAlg = Aes.Create() ?? throw new ArgumentNullException("Aes.Create()");
-            aesAlg.Key = key;
-            aesAlg.IV = iv;
+            byte[] ret = new byte[first.Length + second.Length];
+            Buffer.BlockCopy(first, 0, ret, 0, first.Length);
+            Buffer.BlockCopy(second, 0, ret, first.Length, second.Length);
+            return ret;
+        }
+
+        private static Aes GetAes(byte[] key, byte[] salt)
+        {
+            var aesAlg = Aes.Create();
+            
+            using var sha = SHA256.Create();
+            var keyHash = sha.ComputeHash(Combine(key, salt));
+            var saltHash = sha.ComputeHash(salt);
+            aesAlg.Key = keyHash.Take(32).ToArray();
+            aesAlg.IV = saltHash.Take(16).ToArray();
             //aesAlg.Padding = PaddingMode.Zeros;
             return aesAlg;
 

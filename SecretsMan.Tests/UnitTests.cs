@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using AutoFixture;
 using Microsoft.IdentityModel.Tokens;
 using NFluent;
@@ -27,8 +25,9 @@ namespace SecretsMan.Tests
         [Case]
         public void DirectEncrypt()
         {
-            var plainText = Encoding.UTF8.GetBytes("Hello world");
-            var iv = SomeBytes(16);
+            var plainText = Encoding.UTF8.GetBytes("Hello world huu haa heijaa oeoeoeoeoe");
+            var iv = SomeBytes(2);
+
             var key = SomeBytes(32);
             var encrypted = CryptUtil.EncryptBytes(key, iv, plainText);
             var decrypted = CryptUtil.DecryptBytes(key, iv, encrypted);
